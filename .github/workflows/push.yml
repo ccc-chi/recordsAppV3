@@ -1,0 +1,51 @@
+name: Test and Deploy
+
+on: push
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Reactプロジェクトをビルド
+      - name: Build
+        run: npm run build
+
+      # Firebase CLIをインストール
+      - name: Install firebase-tools
+        run: npm install --save-dev firebase-tools
+
+      # サービスアカウントキーをデコードして環境に設定
+      - name: Decode Firebase service account key
+        run: |
+          echo "${{ secrets.FIREBASE_KEY }}" | base64 -d > ./firebase-key.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-key.json" >> $GITHUB_ENV
+
+      # Firebaseプロジェクトを選択
+      - name: Use Firebase project
+        run: ./node_modules/.bin/firebase use --add ${{ secrets.FIREBASE_PROJECT_ID }}
+
+      # Firebase Hostingにデプロイ
+      - name: Deploy to Firebase Hosting
+        run: ./node_modules/.bin/firebase deploy --only hosting
+
+      # テストを実行
+      - name: Run tests
+        run: npm test
+        
+
+      # サービスアカウントの秘密鍵を削除（セキュリティ対策
+      - name: Delete service account key
+        run: rm $GOOGLE_APPLICATION_CREDENTIALS
+        if: ${{ always() }}
