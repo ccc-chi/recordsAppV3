@@ -36,23 +36,23 @@ function App() {
   }, []);
 
   //-- 学習記録を登録
-  // const [title, setTitle] = useState<string>("");
-  // const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) =>
-  //   setTitle(e.target.value);
-  // const [time, setTime] = useState<number>(0);
-  // useEffect(() => {}, []);
-  // const onChangeTime = (e: React.ChangeEvent<HTMLInputElement>) =>
-  //   setTime(Number(e.target.value));
-  // const onClickAdd = async () => {
-  //   // supabaseに追加
-  //   await addRecords(title, time);
-  //   // リストに追加
-  //   const records = await getAllRecords();
-  //   setRecords(records);
-  //   // inputをリセット
-  //   setTitle("");
-  //   setTime(0);
-  // };
+  const [title, setTitle] = useState<string>("");
+  const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setTitle(e.target.value);
+  const [time, setTime] = useState<number>(0);
+  useEffect(() => {}, []);
+  const onChangeTime = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setTime(Number(e.target.value));
+  const onClickAdd = async () => {
+    // supabaseに追加
+    await addRecords(title, time);
+    // リストに追加
+    const records = await getAllRecords();
+    setRecords(records);
+    // inputをリセット
+    setTitle("");
+    setTime(0);
+  };
 
   //-- バリデーション
   const {
@@ -60,13 +60,13 @@ function App() {
     handleSubmit,
     formState: { errors },
   } = useForm<IFormInput>();
-  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+  const onSubmit: SubmitHandler<IFormInput> = (data) => {
     console.log(data);
-    await addRecords(data.title, data.time);
-    // リストに追加
-    const records = await getAllRecords();
-    setRecords(records);
-    // inputをリセット
+    // await addRecords(data.title, data.time);
+    // // リストに追加
+    // const records = await getAllRecords();
+    // setRecords(records);
+    // // inputをリセット
     // setTitle("");
     // setTime(0);
   };
@@ -90,6 +90,7 @@ function App() {
                   <Input
                     type="text"
                     {...register("title", { required: "必須入力" })}
+                    onChange={onChangeTitle}
                     placeholder="学習内容を入力してください"
                   />
                   {errors?.title?.type === "required" && (
@@ -105,12 +106,15 @@ function App() {
                       min: 18,
                       max: 99,
                     })}
+                    onChange={onChangeTime}
                   />
                   {errors?.time?.type === "required" && (
                     <p>時間の入力は必須です</p>
                   )}
                 </Box>
-                <Button type="submit">登録</Button>
+                <Button type="submit" onClick={onClickAdd}>
+                  登録
+                </Button>
               </form>
             </ModalBody>
 
