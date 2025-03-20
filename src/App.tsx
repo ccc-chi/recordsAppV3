@@ -35,40 +35,24 @@ function App() {
     getRecords();
   }, []);
 
-  //-- 学習記録を登録
-  const [title, setTitle] = useState<string>("");
-  const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setTitle(e.target.value);
-  const [time, setTime] = useState<number>(0);
-  useEffect(() => {}, []);
-  const onChangeTime = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setTime(Number(e.target.value));
-  const onClickAdd = async () => {
-    // supabaseに追加
-    await addRecords(title, time);
-    // リストに追加
-    const records = await getAllRecords();
-    setRecords(records);
-    // inputをリセット
-    setTitle("");
-    setTime(0);
-  };
-
-  //-- バリデーション
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<IFormInput>();
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+
+  //-- 登録ボタンをクリック
+  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     console.log(data);
-    // await addRecords(data.title, data.time);
-    // // リストに追加
-    // const records = await getAllRecords();
-    // setRecords(records);
-    // // inputをリセット
-    // setTitle("");
-    // setTime(0);
+    // データを追加
+    await addRecords(data.title, data.time);
+    const records = await getAllRecords();
+    setRecords(records);
+    // inputをリセット
+    reset();
+    // モーダルを閉じる
+    onClose();
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -89,12 +73,11 @@ function App() {
                   <p>学習内容：</p>
                   <Input
                     type="text"
-                    {...register("title", { required: "必須入力" })}
-                    onChange={onChangeTitle}
+                    {...register("title", { required: "内容の入力は必須です" })}
                     placeholder="学習内容を入力してください"
                   />
-                  {errors?.title?.type === "required" && (
-                    <p>内容の入力は必須です</p>
+                  {errors.title && (
+                    <span style={{ color: "red" }}>{errors.title.message}</span>
                   )}
                 </Box>
                 <Box>
@@ -102,19 +85,20 @@ function App() {
                   <Input
                     type="number"
                     {...register("time", {
-                      required: "必須入力",
-                      min: 18,
+                      required: true,
+                      min: 1,
                       max: 99,
+                      valueAsNumber: true,
                     })}
-                    onChange={onChangeTime}
                   />
                   {errors?.time?.type === "required" && (
                     <p>時間の入力は必須です</p>
                   )}
+                  {errors?.time?.type === "min" && (
+                    <p>時間は0以上で入力してください</p>
+                  )}
                 </Box>
-                <Button type="submit" onClick={onClickAdd}>
-                  登録
-                </Button>
+                <Button type="submit">登録</Button>
               </form>
             </ModalBody>
 
