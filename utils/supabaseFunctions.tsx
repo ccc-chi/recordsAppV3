@@ -28,3 +28,7 @@ export const addRecords = async (
   }
   return data;
 };
+
+export const deleteRecords = async (id: string) => {
+  await supabase.from("study-record").delete().eq("id", id);
+};

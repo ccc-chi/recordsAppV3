@@ -15,7 +15,11 @@ import {
 } from "@chakra-ui/react";
 
 import { Records } from "./domain/records";
-import { addRecords, getAllRecords } from "../utils/supabaseFunctions";
+import {
+  addRecords,
+  getAllRecords,
+  deleteRecords,
+} from "../utils/supabaseFunctions";
 
 interface IFormInput {
   title: string;
@@ -55,6 +59,12 @@ function App() {
     onClose();
   };
 
+  const onClickDeleteRecords = async (id: string) => {
+    await deleteRecords(id);
+    const records = await getAllRecords();
+    setRecords(records);
+  };
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
@@ -92,10 +102,12 @@ function App() {
                     })}
                   />
                   {errors?.time?.type === "required" && (
-                    <p>時間の入力は必須です</p>
+                    <p style={{ color: "red" }}>時間の入力は必須です</p>
                   )}
                   {errors?.time?.type === "min" && (
-                    <p>時間は0以上で入力してください</p>
+                    <p style={{ color: "red" }}>
+                      時間は0以上で入力してください
+                    </p>
                   )}
                 </Box>
                 <Button type="submit">登録</Button>
@@ -115,7 +127,15 @@ function App() {
           ) : (
             records.map((record) => (
               <li key={record.id}>
-                {record.title} {record.time}
+                <Box m={2}>
+                  <p>
+                    {record.title} {record.time}
+                  </p>
+                  <Button onClick={() => onClickDeleteRecords(record.id)}>
+                    削除
+                  </Button>
+                  {record.id}
+                </Box>
               </li>
             ))
           )}
