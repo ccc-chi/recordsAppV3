@@ -69,8 +69,10 @@ function App() {
   return (
     <>
       <div>
-        <h1>Vite</h1>
-        <Button onClick={onOpen}>登録</Button>
+        <h1 data-testid="appTitle">学習記録アプリ</h1>
+        <Button onClick={onOpen} data-testid="openModalButton">
+          記録を追加する
+        </Button>
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
@@ -83,6 +85,7 @@ function App() {
                   <p>学習内容：</p>
                   <Input
                     type="text"
+                    data-testid="titleInput"
                     {...register("title", { required: "内容の入力は必須です" })}
                     placeholder="学習内容を入力してください"
                   />
@@ -94,6 +97,7 @@ function App() {
                   <p>学習時間：</p>
                   <Input
                     type="number"
+                    data-testid="timeInput"
                     {...register("time", {
                       required: true,
                       min: 1,
@@ -110,7 +114,9 @@ function App() {
                     </p>
                   )}
                 </Box>
-                <Button type="submit">登録</Button>
+                <Button type="submit" data-testid="addButton">
+                  登録
+                </Button>
               </form>
             </ModalBody>
 
@@ -121,9 +127,9 @@ function App() {
             </ModalFooter>
           </ModalContent>
         </Modal>
-        <ul>
+        <ul data-testid="listBody">
           {loading ? (
-            <p>loading...</p>
+            <p data-testid="loading">loading...</p>
           ) : (
             records.map((record) => (
               <li key={record.id}>
