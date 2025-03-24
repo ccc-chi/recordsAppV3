@@ -76,7 +76,7 @@ function App() {
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>STUDY RECORD</ModalHeader>
+            <ModalHeader data-testid="modalTitle">新規登録</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <p>学習記録を登録する</p>
@@ -90,7 +90,9 @@ function App() {
                     placeholder="学習内容を入力してください"
                   />
                   {errors.title && (
-                    <span style={{ color: "red" }}>{errors.title.message}</span>
+                    <span data-testid="titleError" style={{ color: "red" }}>
+                      {errors.title.message}
+                    </span>
                   )}
                 </Box>
                 <Box>
@@ -106,10 +108,12 @@ function App() {
                     })}
                   />
                   {errors?.time?.type === "required" && (
-                    <p style={{ color: "red" }}>時間の入力は必須です</p>
+                    <p data-testid="timeErrorRequired" style={{ color: "red" }}>
+                      時間の入力は必須です
+                    </p>
                   )}
                   {errors?.time?.type === "min" && (
-                    <p style={{ color: "red" }}>
+                    <p data-testid="timeErrorMin" style={{ color: "red" }}>
                       時間は0以上で入力してください
                     </p>
                   )}
@@ -127,25 +131,28 @@ function App() {
             </ModalFooter>
           </ModalContent>
         </Modal>
-        <ul data-testid="listBody">
-          {loading ? (
-            <p data-testid="loading">loading...</p>
-          ) : (
-            records.map((record) => (
+        {loading ? (
+          <p data-testid="loading">loading...</p>
+        ) : (
+          <ul data-testid="listBody">
+            {records.map((record) => (
               <li key={record.id}>
                 <Box m={2}>
                   <p>
                     {record.title} {record.time}
                   </p>
-                  <Button onClick={() => onClickDeleteRecords(record.id)}>
+                  <Button
+                    data-testid="deleteButton"
+                    onClick={() => onClickDeleteRecords(record.id)}
+                  >
                     削除
                   </Button>
                   {record.id}
                 </Box>
               </li>
-            ))
-          )}
-        </ul>
+            ))}
+          </ul>
+        )}
       </div>
     </>
   );
