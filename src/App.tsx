@@ -25,7 +25,7 @@ import {
 interface IFormInput {
   id: string;
   title: string;
-  time: number;
+  time: number | null;
 }
 
 function App() {
@@ -61,19 +61,16 @@ function App() {
 
   //-- 登録
   const onClickAddMode = () => {
-    reset({ id: undefined, title: "", time: 0 });
+    reset({ id: undefined, title: "", time: null });
     setIsAdd(true);
     onOpen();
   };
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     console.log(data);
     // データを追加
-    await addRecords(data.title, data.time);
+    await addRecords(data.id, data.title, data.time);
     const records = await getAllRecords();
     setRecords(records);
-    // inputをリセット
-    reset();
-    // モーダルを閉じる
     onClose();
   };
 
@@ -95,7 +92,7 @@ function App() {
     const records = await getAllRecords();
     setRecords(records);
     // inputをリセット
-    reset({ id: undefined, title: "", time: 0 });
+    reset({ id: undefined, title: "", time: null });
     // モーダルを閉じる
     onClose();
   };
@@ -143,6 +140,8 @@ function App() {
                       min: 1,
                       max: 99,
                       valueAsNumber: true,
+                      setValueAs: (value) =>
+                        value === "" ? null : Number(value),
                     })}
                   />
                   {errors?.time?.type === "required" && (
@@ -156,27 +155,22 @@ function App() {
                     </p>
                   )}
                 </Box>
-                {isAdd ? (
-                  <Button type="submit" data-testid="addButton">
-                    登録
-                  </Button>
-                ) : (
-                  <Button type="submit" data-testid="addEditButton">
-                    編集内容を登録
-                  </Button>
-                )}
+                <Box my={4}>
+                  {isAdd ? (
+                    <Button type="submit" data-testid="addButton">
+                      登録
+                    </Button>
+                  ) : (
+                    <Button type="submit" data-testid="addEditButton">
+                      編集内容を登録
+                    </Button>
+                  )}
+                </Box>
               </form>
             </ModalBody>
 
             <ModalFooter>
-              <Button
-                colorScheme="blue"
-                mr={3}
-                onClick={() => {
-                  onClose();
-                  // reset({ id: undefined, title: "", time: 0 });
-                }}
-              >
+              <Button colorScheme="blue" mr={3} onClick={onClose}>
                 Close
               </Button>
             </ModalFooter>

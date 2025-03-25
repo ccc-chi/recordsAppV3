@@ -67,9 +67,8 @@ describe("AppTest", () => {
     await user.click(button);
 
     // 登録されたことを確認
-    await waitFor(() => {
-      expect(screen.getByText(/登録テスト/)).toBeInTheDocument();
-    });
+    const target = await screen.findByText(/登録テスト/);
+    expect(target).toBeInTheDocument();
   });
 
   test("モーダルが新規登録というタイトルになっている", async () => {
@@ -114,10 +113,7 @@ describe("AppTest", () => {
 
     await user.click(button);
     const error = await screen.findByTestId("timeErrorRequired");
-
-    await waitFor(() => {
-      expect(error).toBeInTheDocument();
-    });
+    expect(error).toBeInTheDocument();
   });
 
   test("学習時間がないときに登録するとエラーがでる：0以上でないときのエラー", async () => {

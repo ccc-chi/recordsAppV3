@@ -14,12 +14,13 @@ export const getAllRecords = async (): Promise<Records[]> => {
 };
 
 export const addRecords = async (
+  id: string,
   title: string,
   time: number
 ): Promise<Records[]> => {
   const { data, error } = await supabase
     .from("study-record")
-    .insert({ title: title, time: time });
+    .insert({ id: id, title: title, time: time });
   if (error) {
     console.error("Error:", error.message);
   }
