@@ -14,9 +14,9 @@ export const getAllRecords = async (): Promise<Records[]> => {
 };
 
 export const addRecords = async (
-  id: string,
+  id: string | null,
   title: string,
-  time: number
+  time: number | null
 ): Promise<Records[]> => {
   const { data, error } = await supabase
     .from("study-record")
@@ -37,7 +37,7 @@ export const deleteRecords = async (id: string) => {
 export const updateRecords = async (
   id: string,
   title: string,
-  time: number
+  time: number | null
 ) => {
   const { error } = await supabase
     .from("study-record")

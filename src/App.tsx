@@ -68,7 +68,7 @@ function App() {
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     console.log(data);
     // データを追加
-    await addRecords(data.id, data.title, data.time);
+    await addRecords(null, data.title, data.time);
     const records = await getAllRecords();
     setRecords(records);
     onClose();
