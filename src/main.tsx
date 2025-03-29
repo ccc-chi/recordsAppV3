@@ -1,10 +1,16 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { ChakraProvider } from "@chakra-ui/react";
 
-createRoot(document.getElementById('root')!).render(
+import "./index.css";
+import App from "./App.tsx";
+// import { Form } from './Form.tsx';
+
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
-  </StrictMode>,
-)
+    <ChakraProvider>
+      <App />
+      {/* <Form /> */}
+    </ChakraProvider>
+  </StrictMode>
+);
