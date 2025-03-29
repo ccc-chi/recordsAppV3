@@ -22,6 +22,14 @@ jest.mock("../../utils/supabaseFunctions", () => {
       );
       return Promise.resolve();
     }),
+    updateRecords: jest.fn((id, title, time) => {
+      const index = recordsData.findIndex((record) => record.id === id);
+      if (index !== -1) {
+        recordsData[index].title = title;
+        recordsData[index].time = time;
+      }
+      return Promise.resolve();
+    }),
   };
 });
 
@@ -79,10 +87,7 @@ describe("AppTest", () => {
 
     await user.click(openModalButton);
     const title = await screen.findByTestId("modalTitle");
-
-    await waitFor(() => {
-      expect(title).toBeInTheDocument();
-    });
+    expect(title).toBeInTheDocument();
   });
 
   test("学習内容がないときに登録するとエラーがでる", async () => {
@@ -96,10 +101,7 @@ describe("AppTest", () => {
 
     await user.click(button);
     const error = await screen.findByTestId("titleError");
-
-    await waitFor(() => {
-      expect(error).toBeInTheDocument();
-    });
+    expect(error).toBeInTheDocument();
   });
 
   test("学習時間がないときに登録するとエラーがでる：未入力のエラー", async () => {
@@ -129,11 +131,7 @@ describe("AppTest", () => {
     await user.type(time, "0");
     await user.click(button);
     const error = await screen.findByTestId("timeErrorMin");
-
-    // 登録されたことを確認
-    await waitFor(() => {
-      expect(error).toBeInTheDocument();
-    });
+    expect(error).toBeInTheDocument();
   });
 
   test("削除ができること", async () => {
@@ -156,5 +154,34 @@ describe("AppTest", () => {
       const updatedList = screen.getByTestId("listBody").querySelectorAll("li");
       expect(updatedList.length).toBe(initialCount - 1);
     });
+  });
+
+  test("モーダルのタイトルが記録編集である", async () => {
+    render(<App />);
+
+    const user = userEvent.setup();
+    const buttons = await screen.findAllByTestId("editButton");
+    await user.click(buttons[0]);
+
+    const title = await screen.findByTestId("modalEditTitle");
+    expect(title).toBeInTheDocument();
+  });
+
+  test("編集して登録すると更新される", async () => {
+    render(<App />);
+
+    const user = userEvent.setup();
+    const buttons = await screen.findAllByTestId("editButton");
+    await user.click(buttons[0]);
+
+    const title = await screen.findByTestId("titleInput");
+    const button = await screen.findByTestId("addEditButton");
+
+    // 入力して登録
+    await user.type(title, "編集して更新");
+    await user.click(button);
+
+    const target = await screen.findByText(/編集して更新/);
+    expect(target).toBeInTheDocument();
   });
 });
